@@ -1,0 +1,192 @@
+Agrega comentarios explicativos y manual técnico al archivo main_activity.kt
+# Manual Técnico - Aplicación ToDoList (Android)
+
+## Descripción General
+
+Este archivo describe el funcionamiento y la lógica principal del archivo `main_activity.kt` de la aplicación ToDoList. Este archivo constituye el núcleo de la app, ya que gestiona la interfaz principal, el ciclo de vida y el almacenamiento local de las tareas.
+
+## Estructura y Funcionamiento
+
+### 1. Componentes principales
+
+- **MainActivity**: Es la actividad principal de la aplicación Android. Aquí se gestiona la interfaz de usuario y la lógica para agregar, marcar y eliminar tareas.
+- **Tarea**: Es una clase de datos (`data class`) que representa una tarea individual con su texto y si está completada o no.
+
+### 2. Flujo de la aplicación
+
+- Al iniciar la app (`onCreate`), se configura la interfaz gráfica principal usando `LinearLayout`, un campo para escribir nuevas tareas (`EditText`), un botón para agregarlas y una lista para mostrar las tareas existentes.
+- Las tareas se leen desde el almacenamiento local (`SharedPreferences`), se muestran en pantalla y se pueden agregar, marcar como completadas (checkbox) o eliminar (botón).
+- Cada acción relevante (agregar, marcar, eliminar) actualiza el almacenamiento local y refresca la lista en pantalla.
+
+### 3. Almacenamiento
+
+- Se usa `SharedPreferences` bajo la clave "tareas" para guardar las tareas como un string serializado, separando cada tarea por una línea y usando un formato `"1|texto"` para tareas completadas y `"0|texto"` para incompletas.
+
+## Funcionamiento de la Interfaz
+
+- **Agregar tarea**: El usuario escribe una tarea y pulsa "Agregar". Esta se añade a la lista, se guarda y se actualiza la pantalla.
+- **Marcar tarea**: Al marcar la casilla, se actualiza el estado de completada y se guarda el cambio.
+- **Eliminar tarea**: El botón "Eliminar" elimina la tarea seleccionada de la lista y el almacenamiento.
+
+---
+
+# Manual de Código - Explicación Detallada
+
+## main_activity.kt - Explicación por Bloques
+
+1. **Variables y componentes UI**
+    - Variables como `listaLayout`, `editText`, y `prefs` permiten interactuar con la interfaz y guardar los datos.
+
+2. **onCreate**
+    - Inicializa la interfaz: crea layouts, el campo de texto, el botón y la lista de tareas.
+    - Asigna listeners para el botón de agregar tareas.
+    - Llama a funciones para cargar y mostrar tareas guardadas.
+
+3. **agregarTarea**
+    - Añade una nueva tarea si el texto no está vacío y actualiza la lista y almacenamiento.
+
+4. **mostrarTareas**
+    - Refresca la lista en pantalla, creando dinámicamente una fila por cada tarea con checkbox, texto y botón de eliminar.
+    - El checkbox marca la tarea como completada y aplica un tachado visual.
+    - El botón elimina la tarea correspondiente.
+
+5. **guardarTareas y cargarTareas**
+    - Serializan y deserializan la lista de tareas para almacenarlas en `SharedPreferences`.
+
+## Comentarios Para Subir al GitHub
+
+A continuación se incluyen comentarios explicativos para cada sección del código. Puedes agregarlos directamente en el archivo fuente antes de subirlo al repositorio.
+
+```
+/*
+ * MainActivity - Actividad principal de la aplicación ToDoList.
+ * Gestiona la interfaz, el almacenamiento local y la lógica principal de tareas.
+ */
+
+class MainActivity : AppCompatActivity() {
+    // Layout donde se mostrarán las tareas
+    private lateinit var listaLayout: LinearLayout
+    // Campo de texto para ingresar nuevas tareas
+    private lateinit var editText: EditText
+    // Preferencias para almacenamiento local de tareas
+    private lateinit var prefs: android.content.SharedPreferences
+    // Lista en memoria de las tareas
+    private val tareas = mutableListOf<Tarea>()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Inicializa preferencias
+        prefs = getSharedPreferences("tareas", Context.MODE_PRIVATE)
+
+        // Crea el layout principal verticalmente
+        val layout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(32, 32, 32, 32)
+        }
+
+        // Campo para nueva tarea
+        editText = EditText(this).apply {
+            hint = "Nueva tarea"
+            inputType = InputType.TYPE_CLASS_TEXT
+        }
+        // Botón para agregar tareas
+        val botonAgregar = Button(this).apply {
+            text = "Agregar"
+            setOnClickListener { agregarTarea() }
+        }
+        // Layout para la lista de tareas
+        listaLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+        }
+
+        // Añade los componentes al layout principal
+        layout.addView(editText)
+        layout.addView(botonAgregar)
+        layout.addView(listaLayout)
+
+        setContentView(layout)
+
+        // Carga y muestra las tareas al iniciar
+        cargarTareas()
+        mostrarTareas()
+    }
+
+    // Agrega una tarea nueva si el campo de texto no está vacío
+    private fun agregarTarea() {
+        val texto = editText.text.toString().trim()
+        if (texto.isNotEmpty()) {
+            tareas.add(Tarea(texto, false))
+            editText.text.clear()
+            guardarTareas()
+            mostrarTareas()
+        }
+    }
+
+    // Muestra todas las tareas en la pantalla
+    private fun mostrarTareas() {
+        listaLayout.removeAllViews()
+        tareas.forEachIndexed { i, tarea ->
+            val fila = LinearLayout(this)
+            fila.orientation = LinearLayout.HORIZONTAL
+
+            // Checkbox para marcar completada
+            val checkBox = CheckBox(this)
+            checkBox.isChecked = tarea.completada
+            checkBox.setOnCheckedChangeListener { _, isChecked ->
+                tarea.completada = isChecked
+                guardarTareas()
+                mostrarTareas()
+            }
+
+            // Texto de la tarea; tachado si está completada
+            val textoTarea = TextView(this)
+            textoTarea.text = tarea.texto
+            textoTarea.textSize = 18f
+            if (tarea.completada) {
+                textoTarea.paintFlags = textoTarea.paintFlags or android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+            } else {
+                textoTarea.paintFlags = textoTarea.paintFlags and android.graphics.Paint.STRIKE_THRU_TEXT_FLAG.inv()
+            }
+
+            // Botón para eliminar la tarea
+            val botonEliminar = Button(this)
+            botonEliminar.text = "Eliminar"
+            botonEliminar.setOnClickListener {
+                tareas.removeAt(i)
+                guardarTareas()
+                mostrarTareas()
+            }
+
+            // Añade los componentes a la fila y la fila a la lista
+            fila.addView(checkBox)
+            fila.addView(textoTarea)
+            fila.addView(botonEliminar)
+            listaLayout.addView(fila)
+        }
+    }
+
+    // Guarda las tareas en SharedPreferences
+    private fun guardarTareas() {
+        val texto = tareas.joinToString("\n") { "${if (it.completada) "1" else "0"}|${it.texto}" }
+        prefs.edit().putString("listado", texto).apply()
+    }
+
+    // Carga las tareas desde SharedPreferences
+    private fun cargarTareas() {
+        tareas.clear()
+        val texto = prefs.getString("listado", "") ?: ""
+        if (texto.isNotEmpty()) {
+            texto.split("\n").forEach {
+                val partes = it.split("|", limit = 2)
+                if (partes.size == 2) tareas.add(Tarea(partes[1], partes[0] == "1"))
+            }
+        }
+    }
+}
+
+// Clase de datos que representa una tarea
+data class Tarea(val texto: String, var completada: Boolean)
+```
+
+---
+
