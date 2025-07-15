@@ -1,0 +1,59 @@
+# 📚 Manual de Uso y Resumen de Cambios — App de Tareas
+
+---
+
+## 🆕 Resumen de Cambios Recientes
+
+1. **Diseño Visual **
+   - Tarjetas limpias y minimalistas, colores neutros (fondos blancos/grises, texto oscuro).
+   - Tipografía moderna: Fuente Inter personalizada.
+   - Iconos simples y efectos ripple en botones.
+   - Barra superior clara y elegante.
+
+2. **Nuevas Funcionalidades**
+   - **Editar tareas:** Puedes modificar cualquier tarea (texto, fecha, categoría) con el botón de lápiz.
+   - **Fechas de vencimiento:** Asigna una fecha límite opcional a cada tarea.
+   - **Categorías:** Clasifica tareas por categoría (Personal, Trabajo, Estudio, Otro, o personalizada).
+   - **Animaciones suaves:** Al agregar, eliminar o completar tareas, la app anima los cambios para una experiencia fluida.
+
+3. **Mejoras Técnicas**
+   - `RecyclerView` con animaciones de transición.
+   - Uso de componentes Material Design (`MaterialCardView`, `FloatingActionButton`, etc).
+   - Persistencia segura de tareas y sus detalles con `SharedPreferences`.
+
+---
+
+## 🚀 Manual de Uso
+
+### Pantalla Principal
+- Muestra todas tus tareas como tarjetas agrupadas de manera limpia.
+- Cada tarjeta tiene: checkbox de completado, texto, fecha (si la hay), categoría (si la hay), botón de editar y borrar.
+
+### Agregar una tarea
+1. Pulsa el botón flotante **“+”** en la esquina inferior derecha.
+2. Escribe el nombre de la tarea.
+3. (Opcional) Elige una fecha de vencimiento y/o especifica una categoría.
+4. Pulsa **Agregar** para guardar.
+
+### Editar una tarea
+1. Pulsa el icono de lápiz en la tarjeta de la tarea.
+2. Modifica el texto, la fecha o la categoría.
+3. Pulsa **Guardar** para aplicar los cambios.
+
+### Eliminar una tarea
+- Pulsa el icono de basurero en la tarjeta de la tarea.
+
+### Completar una tarea
+- Marca la casilla a la izquierda del texto. El texto se tachará y se atenuará visualmente.
+
+### Ver detalles
+- Si la tarea tiene fecha de vencimiento y/o categoría, se muestran debajo del texto principal de la tarea.
+
+### Categorías predefinidas y personalizadas
+- Puedes elegir entre las categorías sugeridas o escribir una propia.
+
+### Animaciones y experiencia Notion
+- Al añadir, eliminar o completar tareas verás transiciones suaves y limpias.
+- El diseño es minimalista y moderno.
+
+---
